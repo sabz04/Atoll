@@ -70,8 +70,12 @@ struct TabSelectionView: View {
     @GestureState private var isHoldingTab = false
 
     private static let coordinateSpaceName = "NotchTabBar"
-    /// How far below the bar a held tab has to travel before letting go removes it.
-    private static let removeDistance: CGFloat = 26
+    /// How far below the bar the cursor has to travel before letting go removes
+    /// the held tab — well past the drift of a sideways drag.
+    private static let removeDistance: CGFloat = 48
+    /// The held tab trails the cursor downwards at this rate, so a small drift
+    /// barely moves it and removal reads as a deliberate pull.
+    private static let downwardResistance: CGFloat = 0.55
 
     private var tabs: [TabModel] {
         let arranged = NotchTabCatalog.visibleTabs(
@@ -163,6 +167,13 @@ struct TabSelectionView: View {
         if tab.isRemovable {
             Button("Remove Tab") { remove(tab.id) }
         }
+        if !hiddenNotchTabs.isEmpty {
+            Button("Restore Removed Tabs") {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                    Defaults[.hiddenNotchTabs] = []
+                }
+            }
+        }
         Button("Customize Tabs…") {
             SettingsWindowController.shared.showWindow()
         }
@@ -205,7 +216,7 @@ struct TabSelectionView: View {
         let minX = tabFrames.values.map(\.minX).min() ?? slot.minX
         let maxX = tabFrames.values.map(\.maxX).max() ?? slot.maxX
         let x = min(max(dragLocation.x - grabOffset.width, minX), maxX)
-        let y = slot.midY + max(0, dragLocation.y - grabOffset.height - slot.midY)
+        let y = slot.midY + max(0, dragLocation.y - grabOffset.height - slot.midY) * Self.downwardResistance
         return CGPoint(x: x, y: y)
     }
 

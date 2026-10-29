@@ -85183,6 +85183,16 @@
           }
         }
       }
+    },
+    "Restore Removed Tabs" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вернуть убранные вкладки"
+          }
+        }
+      }
     }
   },
   "version" : "1.2"
