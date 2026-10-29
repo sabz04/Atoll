@@ -46,7 +46,7 @@ struct MinimalisticMusicPlayerView: View {
     private let skipMagnitude: CGFloat = 8
 
     var body: some View {
-        if !musicManager.hasActiveSession {
+        if !musicManager.showsActiveSession {
             // Nothing playing state
             VStack(spacing: 0) {
                 Spacer(minLength: 0)

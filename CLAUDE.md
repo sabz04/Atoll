@@ -74,6 +74,20 @@ scripts/build-custom.sh --install  # + бэкап установленного �
 - `components/Notch/NotchClaudeView.swift` — вкладка; `components/Settings/ClaudeCodeSettings.swift`,
   `NotchTabsSettings.swift` — разделы настроек.
 
+### Скриншоты и медиа
+
+- `managers/ScreenshotsMonitor.swift` — снимки и записи экрана по атрибуту `kMDItemIsScreenCapture` в папке
+  сохранения (`com.apple.screencapture` → `location`, при отсутствии папки macOS пишет на Рабочий стол) и на
+  Рабочем столе; FSEvents, до 60 штук. Смена папки пишет тот же ключ, что Screenshot.app. Монитор стартует при
+  первом открытии вкладки — тогда же macOS спрашивает доступ к папкам.
+- `components/Notch/NotchScreenshotsView.swift` — вкладка: клик копирует, перетаскивание отдаёт файл,
+  меню папки сохранения. Превью — через `ClipboardThumbnailLoader.preview(forFileAt:)`.
+- `helpers/BrowserMediaTab.swift` — клик по обложке переключает на вкладку браузера, где играет трек (AppleScript).
+- `MediaControllers/NowPlayingController.swift` — помощник `mediaremote-adapter.pl` перезапускается при падении
+  (2→30 с) и гасится при выходе из Atoll.
+- `MusicManager.showsActiveSession` — `hasActiveSession` с задержкой скрытия 2.5 с, чтобы плеер не мигал
+  календарём при смене трека.
+
 ## Отличия форка от upstream
 
 1. Буфер обмена — вкладка в верхнем баре выреза (режим `.notchTab`, он же новый default; одноразовая
@@ -96,6 +110,8 @@ scripts/build-custom.sh --install  # + бэкап установленного �
 10. Вкладка Claude Code: сессии за 7 дней из терминала и приложения, живой статус через хуки (подключаются кнопкой
     во вкладке или в настройках), уведомления под закрытым вырезом, открытие/продолжение сессии по клику.
 
+11. Вкладка «Скриншоты» с выбором папки сохранения; переход на вкладку браузера по обложке; помощник
+    Now Playing перезапускается; плеер не мигает при смене трека.
 ## Правила
 
 - В новых файлах — GPL-заголовок как в соседних файлах.

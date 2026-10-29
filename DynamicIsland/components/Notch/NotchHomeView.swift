@@ -906,7 +906,7 @@ struct NotchHomeView: View {
 
     /// Whether the music player should actively display (enabled AND has real content).
     private var shouldShowMusicPlayer: Bool {
-        showStandardMediaControls && (!autoHideInactiveNotchMediaPlayer || musicManager.hasActiveSession)
+        showStandardMediaControls && (!autoHideInactiveNotchMediaPlayer || musicManager.showsActiveSession)
     }
 
     private var shouldShowSideLyrics: Bool {

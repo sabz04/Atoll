@@ -597,6 +597,30 @@ class MusicManager: ObservableObject {
         return hasRealTitle || hasRealArtist
     }
 
+    /// `hasActiveSession` as the notch should show it: on at once, off only
+    /// after the session has stayed empty for `sessionHideDelay`. Skipping a
+    /// track in a browser clears Now Playing for a beat before the next track
+    /// arrives; hiding the player for that beat flashed the calendar in its place.
+    @Published private(set) var showsActiveSession = false
+    private var sessionHideWork: DispatchWorkItem?
+    private static let sessionHideDelay: TimeInterval = 2.5
+
+    private func updateSessionVisibility() {
+        if hasActiveSession {
+            sessionHideWork?.cancel()
+            sessionHideWork = nil
+            if !showsActiveSession { showsActiveSession = true }
+        } else if showsActiveSession, sessionHideWork == nil {
+            let work = DispatchWorkItem { [weak self] in
+                guard let self else { return }
+                self.sessionHideWork = nil
+                if !self.hasActiveSession { self.showsActiveSession = false }
+            }
+            sessionHideWork = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + Self.sessionHideDelay, execute: work)
+        }
+    }
+
     @Published var animations: DynamicIslandAnimations = .init()
     @Published var avgColor: NSColor = .white
     @Published var secondaryColor: NSColor = .gray
@@ -723,6 +747,12 @@ class MusicManager: ObservableObject {
 
     // MARK: - Initialization
     init(startsControllerSetup: Bool = true) {
+        // Delivered after the properties change, so `hasActiveSession` reads the new values.
+        Publishers.CombineLatest3($isPlaying, $songTitle, $artistName)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.updateSessionVisibility() }
+            .store(in: &cancellables)
+
         guard startsControllerSetup else { return }
 
         // Listen for changes to the default controller preference

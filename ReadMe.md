@@ -43,6 +43,8 @@
 > - Leaner clipboard capture: types are detected without reading the whole payload, duplicate images are matched by hash, thumbnails are decoded off the main thread.
 > - Rearrange the tab bar: press and hold a tab to drag it, drag it down to remove it; Settings → Tabs brings tabs back (Home always stays).
 > - A Claude Code tab lists your sessions from the terminal and the Claude app with live status (working, needs permission, done) via Claude Code hooks, notifies under the closed notch, and resumes a session in one click. Everything stays local.
+> - A Screenshots tab shows your latest screenshots and screen recordings: click to copy, drag into any app, and change where macOS saves them.
+> - Clicking the artwork of browser playback brings forward the exact tab that is playing; the Now Playing helper restarts itself if it dies, and the player no longer flickers between tracks.
 > - Sparkle auto-updates are off, so upstream releases never replace the custom build.
 >
 > There are no prebuilt releases: build it with `scripts/build-custom.sh` (notes in [CLAUDE.md](CLAUDE.md)).

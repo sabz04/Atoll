@@ -63,10 +63,26 @@ final class ClipboardThumbnailLoader {
     }
 
     func preview(for item: ClipboardItem, maxPixel: CGFloat) async -> Preview? {
-        let key = Self.key(item, maxPixel)
+        await preview(key: Self.key(item, maxPixel), maxPixel: maxPixel) { Self.source(for: item) }
+    }
+
+    /// Previews for files on disk (screenshots, screen recordings), keyed by
+    /// path: images are downsampled, everything else goes through QuickLook.
+    func cachedPreview(forFileAt url: URL, maxPixel: CGFloat) -> Preview? {
+        cache.object(forKey: Self.key(url, maxPixel))?.preview
+    }
+
+    func preview(forFileAt url: URL, maxPixel: CGFloat) async -> Preview? {
+        let isImage = ["png", "jpg", "jpeg", "heic", "tiff", "gif"].contains(url.pathExtension.lowercased())
+        return await preview(key: Self.key(url, maxPixel), maxPixel: maxPixel) {
+            isImage ? .imageFile(url) : .file(url)
+        }
+    }
+
+    private func preview(key: NSString, maxPixel: CGFloat, source makeSource: () -> Source?) async -> Preview? {
         if let hit = cache.object(forKey: key) { return hit.preview }
         if let running = inFlight[key] { return await running.value }
-        guard let source = Self.source(for: item) else { return nil }
+        guard let source = makeSource() else { return nil }
 
         let task = Task.detached(priority: .utility) {
             await Self.render(source, maxPixel: maxPixel)
@@ -80,6 +96,10 @@ final class ClipboardThumbnailLoader {
 
     private static func key(_ item: ClipboardItem, _ maxPixel: CGFloat) -> NSString {
         "\(item.id.uuidString)-\(Int(maxPixel))" as NSString
+    }
+
+    private static func key(_ url: URL, _ maxPixel: CGFloat) -> NSString {
+        "file:\(url.path)-\(Int(maxPixel))" as NSString
     }
 
     private static func source(for item: ClipboardItem) -> Source? {

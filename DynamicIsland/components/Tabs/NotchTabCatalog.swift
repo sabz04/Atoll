@@ -30,6 +30,7 @@ enum NotchTabKind: String, CaseIterable {
     case llmUsage
     case notes
     case clipboard
+    case screenshots
     case claude
     case terminal
 
@@ -42,6 +43,7 @@ enum NotchTabKind: String, CaseIterable {
         case .llmUsage: return .llmUsage
         case .notes: return .notes
         case .clipboard: return .clipboard
+        case .screenshots: return .screenshots
         case .claude: return .claude
         case .terminal: return .terminal
         }
@@ -56,6 +58,7 @@ enum NotchTabKind: String, CaseIterable {
         case .llmUsage: return String(localized: "Usage")
         case .notes: return Defaults[.enableNotes] ? String(localized: "Notes") : String(localized: "Clipboard")
         case .clipboard: return String(localized: "Clipboard")
+        case .screenshots: return String(localized: "Screenshots")
         case .claude: return "Claude Code"
         case .terminal: return String(localized: "Terminal")
         }
@@ -70,6 +73,7 @@ enum NotchTabKind: String, CaseIterable {
         case .llmUsage: return "chart.bar.doc.horizontal"
         case .notes: return Defaults[.enableNotes] ? "note.text" : "doc.on.clipboard"
         case .clipboard: return "list.clipboard"
+        case .screenshots: return "camera.viewfinder"
         case .claude: return "sparkle"
         case .terminal: return "apple.terminal"
         }
@@ -95,6 +99,9 @@ enum NotchTabKind: String, CaseIterable {
                 || (Defaults[.enableClipboardManager] && Defaults[.clipboardDisplayMode] == .separateTab)
         case .clipboard:
             return Defaults[.enableClipboardManager] && Defaults[.clipboardDisplayMode] == .notchTab
+        case .screenshots:
+            // No feature switch of its own: remove it from the bar to turn it off.
+            return true
         case .claude:
             return Defaults[.enableClaudeCodeIntegration]
         case .terminal:

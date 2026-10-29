@@ -85193,6 +85193,166 @@
           }
         }
       }
+    },
+    "Screenshots" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скриншоты"
+          }
+        }
+      }
+    },
+    "Save Screenshots Here" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранять скриншоты сюда"
+          }
+        }
+      }
+    },
+    "Create “%@”" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Создать «%@»"
+          }
+        }
+      }
+    },
+    "The save folder set in macOS doesn't exist, so screenshots go to the Desktop. Create it to save there." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Папки, указанной в macOS для скриншотов, нет — поэтому они попадают на Рабочий стол. Создайте её, чтобы сохранять туда."
+          }
+        }
+      }
+    },
+    "Choose Folder…" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрать папку…"
+          }
+        }
+      }
+    },
+    "Save to Desktop" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранять на Рабочий стол"
+          }
+        }
+      }
+    },
+    "Show in Finder" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать в Finder"
+          }
+        }
+      }
+    },
+    "Where macOS saves new screenshots" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Куда macOS сохраняет новые скриншоты"
+          }
+        }
+      }
+    },
+    "Desktop" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рабочий стол"
+          }
+        }
+      }
+    },
+    "No screenshots yet" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скриншотов пока нет"
+          }
+        }
+      }
+    },
+    "⇧⌘4 captures part of the screen, ⇧⌘5 opens all options" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇧⌘4 — снимок области, ⇧⌘5 — все варианты"
+          }
+        }
+      }
+    },
+    "Atoll can't see the screenshot folder" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atoll не видит папку со скриншотами"
+          }
+        }
+      }
+    },
+    "Open Privacy Settings" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть настройки конфиденциальности"
+          }
+        }
+      }
+    },
+    "Copy" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Копировать"
+          }
+        }
+      }
+    },
+    "Open" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть"
+          }
+        }
+      }
+    },
+    "Move to Trash" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переместить в Корзину"
+          }
+        }
+      }
     }
   },
   "version" : "1.2"

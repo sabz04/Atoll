@@ -47,7 +47,7 @@ func sideLyricsRequiredNotchWidth() -> CGFloat {
           !Defaults[.showCalendar],
           !Defaults[.enableMinimalisticUI],
           Defaults[.showStandardMediaControls],
-          (!Defaults[.autoHideInactiveNotchMediaPlayer] || MusicManager.shared.hasActiveSession)
+          (!Defaults[.autoHideInactiveNotchMediaPlayer] || MusicManager.shared.showsActiveSession)
     else { return 0 }
 
     let panelWidth = max(0, Defaults[.lyricsPanelWidth])
@@ -242,7 +242,7 @@ func inlineLyricsAdjustedNotchSize(
           Defaults[.enableLyrics],
           Defaults[.showCalendar],
           Defaults[.showStandardMediaControls],
-          (!Defaults[.autoHideInactiveNotchMediaPlayer] || MusicManager.shared.hasActiveSession)
+          (!Defaults[.autoHideInactiveNotchMediaPlayer] || MusicManager.shared.showsActiveSession)
     else {
         return baseSize
     }

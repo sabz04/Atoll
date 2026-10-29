@@ -571,7 +571,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         } else if coordinator.currentView == .notes {
             let preferredHeight = coordinator.notesLayoutState.preferredHeight
             baseSize.height = max(baseSize.height, preferredHeight)
-        } else if coordinator.currentView == .clipboard || coordinator.currentView == .claude {
+        } else if coordinator.currentView == .clipboard || coordinator.currentView == .claude || coordinator.currentView == .screenshots {
             // Clipboard has its own fixed height source; don't inherit the notes layout state.
             baseSize.height = max(baseSize.height, NotesLayoutState.list.preferredHeight)
         } else if coordinator.currentView == .terminal {

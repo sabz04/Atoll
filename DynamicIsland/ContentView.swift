@@ -195,7 +195,7 @@ struct ContentView: View {
             return CGSize(width: baseSize.width, height: resolvedHeight)
         }
 
-        if coordinator.currentView == .clipboard || coordinator.currentView == .claude {
+        if coordinator.currentView == .clipboard || coordinator.currentView == .claude || coordinator.currentView == .screenshots {
             // Clipboard has its own fixed height source; don't inherit whatever notes
             // layout state happens to be set.
             let resolvedHeight = max(baseSize.height, NotesLayoutState.list.preferredHeight)
@@ -1324,6 +1324,8 @@ struct ContentView: View {
                                 NotchNotesView()
                             case .clipboard:
                                 NotchClipboardView()
+                            case .screenshots:
+                                NotchScreenshotsView()
                             case .claude:
                                 NotchClaudeView()
                             case .terminal:

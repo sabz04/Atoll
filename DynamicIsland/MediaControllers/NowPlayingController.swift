@@ -65,6 +65,7 @@ final class NowPlayingController: ObservableObject, MediaControllerProtocol {
     private var isShuttingDown = false
     /// Consecutive restarts without an update in between; drives the backoff.
     private var restartAttempts = 0
+    private var terminationObserver: NSObjectProtocol?
 
     // MARK: - Initialization
     init?() {
@@ -94,10 +95,21 @@ final class NowPlayingController: ObservableObject, MediaControllerProtocol {
             MRMediaRemoteSetRepeatModePointer, to: (@convention(c) (Int) -> Void).self)
 
         Task { await setupNowPlayingObserver() }
+
+        // Quitting Atoll skips deinit; without this the helper outlives the app
+        // until its next write hits the closed pipe.
+        terminationObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.willTerminateNotification, object: nil, queue: nil
+        ) { [weak self] _ in
+            guard let self else { return }
+            self.isShuttingDown = true
+            if self.process?.isRunning == true { self.process?.terminate() }
+        }
     }
 
     deinit {
         isShuttingDown = true
+        if let terminationObserver { NotificationCenter.default.removeObserver(terminationObserver) }
         streamTask?.cancel()
         
         if let pipeHandler = self.pipeHandler {
