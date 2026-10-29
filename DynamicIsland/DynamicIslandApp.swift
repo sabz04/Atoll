@@ -36,11 +36,12 @@ struct DynamicNotchApp: App {
     private let updaterDelegate = AtollUpdaterDelegate()
 
     init() {
-        // Skip Sparkle's launch-time update check during UI testing.
+        // Skip Sparkle's launch-time update check during UI testing, and
+        // entirely in custom builds (see AppRuntimeEnvironment.isCustomBuild).
         // The AtollUpdaterDelegate overrides the feed URL at runtime
         // based on the user's selected update channel.
         updaterController = SPUStandardUpdaterController(
-            startingUpdater: !AppRuntimeEnvironment.isUITesting,
+            startingUpdater: !AppRuntimeEnvironment.isUITesting && !AppRuntimeEnvironment.isCustomBuild,
             updaterDelegate: updaterDelegate, userDriverDelegate: nil)
 
         // Initialize the settings window controller with the updater controller
@@ -716,6 +717,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Defaults.Keys.migrateCapsLockTintMode()
         Defaults.Keys.migrateThirdPartyDDCIntegration()
         Defaults.Keys.migrateClipboardShortcutToV()
+        Defaults.Keys.migrateClipboardToNotchTab()
+
+        // Capture from launch: without a header button (tab modes) nothing else
+        // starts monitoring until the tab is first opened, losing earlier copies.
+        // Not under unit tests: they point the clipboard store at a temp directory
+        // before first touching the manager, and creating it here would run its
+        // file cleanup against the real ~/Documents/ClipboardData first.
+        if Defaults[.enableClipboardManager] && !AppRuntimeEnvironment.isHostingUnitTests {
+            ClipboardManager.shared.startMonitoring()
+        }
 
         Defaults.publisher(.enableThirdPartyDDCIntegration, options: [])
             .receive(on: DispatchQueue.main)

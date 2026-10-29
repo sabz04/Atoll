@@ -8572,7 +8572,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Выравнивание"
+            "value" : "Все"
           }
         },
         "th" : {
@@ -21441,6 +21441,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "무언가를 복사하면 여기에 표시됩니다"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопируйте что-нибудь — оно появится здесь"
           }
         }
       }
@@ -51570,12 +51576,17 @@
       }
     },
     "Notch Tab" : {
-      "extractionState" : "stale",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "노치 탭"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вкладка в вырезе"
           }
         }
       }
@@ -51586,6 +51597,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "노치 탭 모드는 노치 안의 별도 탭에 클립보드를 표시합니다. 텍스트, 이미지 또는 단일 파일 항목을 Finder나 다른 앱으로 바로 드래그할 수 있습니다."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Буфер обмена — отдельная вкладка в вырезе. Текст, изображения и файлы можно перетаскивать прямо в Finder или другое приложение."
           }
         }
       }
@@ -62766,7 +62783,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Строк обратной прокрутки"
+            "value" : "Поиск в буфере…"
           }
         },
         "th" : {
@@ -84573,6 +84590,86 @@
         }
       },
       "shouldTranslate" : false
+    },
+    "Links" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ссылки"
+          }
+        }
+      }
+    },
+    "Photos" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фото"
+          }
+        }
+      }
+    },
+    "Files" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлы"
+          }
+        }
+      }
+    },
+    "Copied" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировано"
+          }
+        }
+      }
+    },
+    "Add to Favorites" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В избранное"
+          }
+        }
+      }
+    },
+    "Remove from Favorites" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Убрать из избранного"
+          }
+        }
+      }
+    },
+    "25 items" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "25 шт."
+          }
+        }
+      }
+    },
+    "50 items" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "50 шт."
+          }
+        }
+      }
     }
   },
   "version" : "1.2"

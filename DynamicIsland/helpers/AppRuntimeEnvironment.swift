@@ -28,4 +28,15 @@ enum AppRuntimeEnvironment {
         return false
         #endif
     }()
+
+    /// `true` while the app is the host process of a unit-test run (XCTest sets this variable).
+    static let isHostingUnitTests: Bool = {
+        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+    }()
+
+    /// `true` in builds of this fork (Info.plist `AtollCustomBuild`). Sparkle stays off
+    /// in them: upstream's feed would otherwise replace the custom app with the official one.
+    static let isCustomBuild: Bool = {
+        Bundle.main.object(forInfoDictionaryKey: "AtollCustomBuild") as? Bool ?? false
+    }()
 }

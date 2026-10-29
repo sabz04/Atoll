@@ -19,6 +19,7 @@
 import AppKit
 import SwiftUI
 import Combine
+import CryptoKit
 import Foundation
 import UniformTypeIdentifiers
 import Defaults
@@ -63,7 +64,11 @@ struct ClipboardItem: Identifiable, Codable {
     var imageFileName: String? // Store filename instead of data
     let fileURLs: [String]?
     let rtfData: Data? // RTF is typically small, so we can keep this
-    
+    /// SHA-256 of the image bytes, taken at capture so duplicate detection never
+    /// has to read stored images back from disk. Nil for other types and for
+    /// images saved by builds that predate it.
+    var contentHash: String?
+
     init(stringData: String, type: ClipboardItemType) {
         self.stringData = stringData
         self.imageFileName = nil
@@ -80,7 +85,8 @@ struct ClipboardItem: Identifiable, Codable {
         self.rtfData = nil
         self.type = .image
         self.timestamp = Date()
-        
+        self.contentHash = SHA256.hash(data: imageData).map { String(format: "%02x", $0) }.joined()
+
         let sizeDescription = ByteCountFormatter.string(fromByteCount: Int64(imageData.count), countStyle: .file)
 
         guard Defaults[.persistClipboardHistory] else {
@@ -445,9 +451,15 @@ class ClipboardManager: ObservableObject {
         }
         
         clipboardHistory.removeAll { $0.id == item.id }
+        // The notch tab lists favorites alongside history, so a delete there
+        // can target a pinned item too.
+        if pinnedItems.contains(where: { $0.id == item.id }) {
+            pinnedItems.removeAll { $0.id == item.id }
+            savePinnedItemsToDefaults()
+        }
         saveHistoryToDefaults()
     }
-    
+
     func clearHistory() {
         // Clean up all associated files
         for item in clipboardHistory {
@@ -570,6 +582,10 @@ class ClipboardManager: ObservableObject {
         // Don't add duplicate items
         if !clipboardHistory.contains(where: { isSameContent($0, clipboardItem) }) {
             addToHistory(clipboardItem)
+        } else if let fileName = clipboardItem.imageFileName {
+            // A repeated image wrote its PNG before it was recognised; drop the
+            // orphan now instead of leaving it for the next launch's cleanup.
+            try? FileManager.default.removeItem(at: ClipboardManager.clipboardDataDirectory.appendingPathComponent(fileName))
         }
     }
     
@@ -577,11 +593,12 @@ class ClipboardManager: ObservableObject {
         let pasteboard = NSPasteboard.general
         
         // Step 1: Check what types are available
+        // Ask which types are on offer rather than reading them: `data(forType:)`
+        // pulls the whole payload (a multi-megabyte TIFF for a screenshot) just
+        // to learn that it exists, and this runs on every copy.
+        let availableTypes = Set(pasteboard.types ?? [])
         let hasFileURLs = pasteboard.canReadObject(forClasses: [NSURL.self], options: nil)
-        let hasImageData = pasteboard.data(forType: .png) != nil || 
-                          pasteboard.data(forType: .tiff) != nil || 
-                          pasteboard.data(forType: NSPasteboard.PasteboardType("public.jpeg")) != nil
-        let hasString = pasteboard.string(forType: .string) != nil
+        let hasImageData = !availableTypes.isDisjoint(with: [.png, .tiff, NSPasteboard.PasteboardType("public.jpeg")])
         
         // Step 2: Smart detection based on context
         
@@ -723,7 +740,10 @@ class ClipboardManager: ObservableObject {
         case .text, .url, .unknown:
             return item1.stringData == item2.stringData
         case .image:
-            // For images, compare the actual data if both are available
+            if let hash1 = item1.contentHash, let hash2 = item2.contentHash {
+                return hash1 == hash2
+            }
+            // Items saved before hashes existed: compare the actual data
             let data1 = item1.getImageData()
             let data2 = item2.getImageData()
             return data1 == data2

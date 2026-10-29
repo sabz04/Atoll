@@ -126,6 +126,11 @@ func enabledStandardTabCount() -> Int {
         count += 1
     }
 
+    // Clipboard tab (only in .notchTab display mode)
+    if Defaults[.enableClipboardManager] && Defaults[.clipboardDisplayMode] == .notchTab {
+        count += 1
+    }
+
     // Terminal tab
     if Defaults[.enableTerminalFeature] {
         count += 1

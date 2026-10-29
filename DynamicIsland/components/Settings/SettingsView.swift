@@ -8534,6 +8534,8 @@ struct ClipboardSettings: View {
                             Text("5 items").tag(5)
                             Text("7 items").tag(7)
                             Text("10 items").tag(10)
+                            Text("25 items").tag(25)
+                            Text("50 items").tag(50)
                         }
                         .pickerStyle(.menu)
                         .frame(minWidth: 100)

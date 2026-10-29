@@ -142,7 +142,8 @@ class DynamicIslandViewCoordinator: ObservableObject {
         }
     }
     
-    @AppStorage("openLastTabByDefault") var openLastTabByDefault: Bool = false {
+    // On by default in this build: closing the notch should not throw away the tab you were on.
+    @AppStorage("openLastTabByDefault") var openLastTabByDefault: Bool = true {
         didSet {
             if openLastTabByDefault {
                 alwaysShowTabs = true

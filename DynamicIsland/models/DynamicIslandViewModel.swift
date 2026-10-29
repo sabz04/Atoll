@@ -448,11 +448,15 @@ class DynamicIslandViewModel: NSObject, ObservableObject {
         resetScrollGestureSuppression()
         resetAutoCloseSuppression()
 
-        // Set the current view to shelf if it contains files and the user enables openShelfByDefault
-        // Otherwise, if the user has not enabled openLastShelfByDefault, set the view to home
+        // Remembering the last tab wins over the shelf: reopening should land where
+        // the user left off, even while the shelf holds files.
+        guard !coordinator.openLastTabByDefault else { return }
+
+        // Otherwise show the shelf if it contains files and the user enables openShelfByDefault,
+        // and home in every other case
         if !ShelfStateViewModel.shared.isEmpty && Defaults[.openShelfByDefault] && !Defaults[.enableMinimalisticUI] {
             coordinator.currentView = .shelf
-        } else if !coordinator.openLastTabByDefault {
+        } else {
             coordinator.currentView = .home
         }
     }

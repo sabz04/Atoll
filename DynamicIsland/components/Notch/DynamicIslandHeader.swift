@@ -130,9 +130,11 @@ struct DynamicIslandHeader: View {
                         .buttonStyle(PlainButtonStyle())
                     }
                     
+                    // Both tab modes reach the clipboard through the tab bar instead.
                     if Defaults[.enableClipboardManager]
                         && showClipboardIcon
-                        && clipboardDisplayMode != .separateTab {
+                        && clipboardDisplayMode != .separateTab
+                        && clipboardDisplayMode != .notchTab {
                         Button(action: {
                             // Switch behavior based on display mode
                             switch clipboardDisplayMode {

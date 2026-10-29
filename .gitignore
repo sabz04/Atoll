@@ -165,3 +165,7 @@ implementation_plan.md
 walkthrough.md
 TemporaryAssets/
 *.profraw
+
+# Local signing identity for scripts/build-custom.sh
+scripts/custom-build.local.env
+!scripts/build-custom.sh

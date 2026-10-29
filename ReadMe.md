@@ -36,6 +36,15 @@
   <a href="https://discord.gg/PaqFkRTDF8">Join our Discord community</a>
 </p>
 
+> [!NOTE]
+> **This is a personal fork** of [Ebullioscopic/Atoll](https://github.com/Ebullioscopic/Atoll). What's different:
+> - The clipboard lives inside the notch as a tab in the top bar, with filters (Text, Links, Photos, Files, Favorites), search, and cards that show real image thumbnails, link hosts and file previews.
+> - Closing the notch keeps your place: it reopens on the last tab, with the clipboard filter, search and scroll position intact.
+> - Leaner clipboard capture: types are detected without reading the whole payload, duplicate images are matched by hash, thumbnails are decoded off the main thread.
+> - Sparkle auto-updates are off, so upstream releases never replace the custom build.
+>
+> There are no prebuilt releases: build it with `scripts/build-custom.sh` (notes in [CLAUDE.md](CLAUDE.md)).
+
 Atoll turns the MacBook notch into a focused command surface for media, system insight, and quick utilities. It stays out of the way until needed, then expands with responsive, native SwiftUI animations.
 
 <p align="center">

@@ -49,7 +49,7 @@ struct NotchNotesView: View {
     var body: some View {
         HStack(spacing: 0) {
             if showSplitView {
-                NotchClipboardView(fixedColumns: 2)
+                NotchClipboardView(compact: true)
                     .frame(maxWidth: .infinity)
                 
                 if enableNotes {

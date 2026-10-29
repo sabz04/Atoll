@@ -53,6 +53,8 @@ struct TabSelectionView: View {
     @Default(.enableStatsFeature) var enableStatsFeature
     @Default(.enableColorPickerFeature) var enableColorPickerFeature
     @Default(.timerDisplayMode) var timerDisplayMode
+    @Default(.enableClipboardManager) private var enableClipboardManager
+    @Default(.clipboardDisplayMode) private var clipboardDisplayMode
     @Default(.enableThirdPartyExtensions) private var enableThirdPartyExtensions
     @Default(.enableExtensionNotchExperiences) private var enableExtensionNotchExperiences
     @Default(.enableExtensionNotchTabs) private var enableExtensionNotchTabs
@@ -91,6 +93,9 @@ struct TabSelectionView: View {
             let label = Defaults[.enableNotes] ? "Notes" : "Clipboard"
             let icon = Defaults[.enableNotes] ? "note.text" : "doc.on.clipboard"
             tabsArray.append(TabModel(label: label, icon: icon, view: .notes))
+        }
+        if enableClipboardManager && clipboardDisplayMode == .notchTab {
+            tabsArray.append(TabModel(label: "Clipboard", icon: "list.clipboard", view: .clipboard))
         }
         if Defaults[.enableTerminalFeature] {
             tabsArray.append(TabModel(label: "Terminal", icon: "apple.terminal", view: .terminal))

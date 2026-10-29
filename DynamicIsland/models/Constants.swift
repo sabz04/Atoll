@@ -1357,13 +1357,15 @@ extension Defaults.Keys {
     
     // MARK: Clipboard Feature
     static let enableClipboardManager = Key<Bool>("enableClipboardManager", default: true)
-    static let clipboardHistorySize = Key<Int>("clipboardHistorySize", default: 3)
+    /// Large enough for the notch tab's type filters to have something to filter.
+    static let clipboardHistorySize = Key<Int>("clipboardHistorySize", default: 25)
     /// Whether clipboard history is written to disk and restored on launch.
     /// Off keeps it in memory for the session only — nothing survives a quit.
     /// Defaults to true so existing installs keep the behaviour they have.
     static let persistClipboardHistory = Key<Bool>("persistClipboardHistory", default: true)
     static let showClipboardIcon = Key<Bool>("showClipboardIcon", default: true)
-    static let clipboardDisplayMode = Key<ClipboardDisplayMode>("clipboardDisplayMode", default: .panel)
+    static let clipboardDisplayMode = Key<ClipboardDisplayMode>("clipboardDisplayMode", default: .notchTab)
+    static let didMigrateClipboardToNotchTab = Key<Bool>("didMigrateClipboardToNotchTab", default: false)
     
     // MARK: Screen Assistant Feature
     static let enableScreenAssistant = Key<Bool>("enableScreenAssistant", default: true)
@@ -1580,6 +1582,22 @@ extension Defaults.Keys {
         }
 
         Defaults[.didMigrateClipboardShortcutToV] = true
+    }
+
+    /// Move the clipboard from a floating window into the notch's tab bar, once.
+    ///
+    /// The tab is this build's clipboard UI; installs that ran an earlier build
+    /// sit on the old `.panel` default (or a popover), so the new default alone
+    /// would never reach them. Anyone who picks a window mode again afterwards
+    /// keeps it, since the marker stops this from running twice.
+    static func migrateClipboardToNotchTab() {
+        guard Defaults[.didMigrateClipboardToNotchTab] == false else { return }
+
+        if Defaults[.clipboardDisplayMode] == .panel || Defaults[.clipboardDisplayMode] == .popover {
+            Defaults[.clipboardDisplayMode] = .notchTab
+        }
+
+        Defaults[.didMigrateClipboardToNotchTab] = true
     }
 
     static func migrateCapsLockTintMode() {
