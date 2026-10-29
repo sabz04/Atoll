@@ -61,6 +61,10 @@ final class NowPlayingController: ObservableObject, MediaControllerProtocol {
     private var process: Process?
     private var pipeHandler: JSONLinesPipeHandler?
     private var streamTask: Task<Void, Never>?
+    /// Set once the controller is going away, so the helper's exit is not taken for a crash.
+    private var isShuttingDown = false
+    /// Consecutive restarts without an update in between; drives the backoff.
+    private var restartAttempts = 0
 
     // MARK: - Initialization
     init?() {
@@ -93,6 +97,7 @@ final class NowPlayingController: ObservableObject, MediaControllerProtocol {
     }
 
     deinit {
+        isShuttingDown = true
         streamTask?.cancel()
         
         if let pipeHandler = self.pipeHandler {
@@ -293,6 +298,15 @@ final class NowPlayingController: ObservableObject, MediaControllerProtocol {
             print("NowPlayingController [stderr]: \(message)")
         }
         
+        // The helper can exit on its own (MediaRemote restarting after sleep, the
+        // system reaping it) and nothing else would bring it back: the notch
+        // would show no media until Atoll is relaunched.
+        process.terminationHandler = { [weak self] finished in
+            guard let self, !self.isShuttingDown else { return }
+            let status = finished.terminationStatus
+            Task { await self.restartAdapter(afterExitStatus: status) }
+        }
+
         self.process = process
         self.pipeHandler = pipeHandler
 
@@ -306,6 +320,19 @@ final class NowPlayingController: ObservableObject, MediaControllerProtocol {
         }
     }
 
+    /// Relaunches the helper after it exits, backing off 2, 4, 8, 16, then 30 s
+    /// while it keeps failing; a successful update resets the backoff.
+    private func restartAdapter(afterExitStatus status: Int32) async {
+        restartAttempts += 1
+        let delay = min(30, pow(2, Double(min(restartAttempts, 5))))
+        Logger.log("NowPlayingController: mediaremote-adapter exited (\(status)), restarting in \(Int(delay))s", category: .warning)
+        try? await Task.sleep(for: .seconds(delay))
+        guard !isShuttingDown else { return }
+        streamTask?.cancel()
+        if let pipeHandler { await pipeHandler.close() }
+        await setupNowPlayingObserver()
+    }
+
     // MARK: - Async Stream Processing
     private func processJSONStream() async {
         guard let pipeHandler = self.pipeHandler else { return }
@@ -317,6 +344,7 @@ final class NowPlayingController: ObservableObject, MediaControllerProtocol {
 
     // MARK: - Update Methods
     private func handleAdapterUpdate(_ update: NowPlayingUpdate) async {
+        restartAttempts = 0
         let payload = update.payload
         let diff = update.diff ?? false
 
