@@ -1739,6 +1739,20 @@ class MusicManager: ObservableObject {
             return
         }
 
+        // In a browser the music is one tab among many: bring that tab forward
+        // rather than whichever window the browser had in front.
+        if BrowserMediaTab.supports(bundleID) {
+            let title = songTitle
+            Task {
+                if await BrowserMediaTab.focus(bundleIdentifier: bundleID, title: title) { return }
+                await MainActor.run { self.launchMusicApp(bundleID) }
+            }
+            return
+        }
+        launchMusicApp(bundleID)
+    }
+
+    private func launchMusicApp(_ bundleID: String) {
         let workspace = NSWorkspace.shared
         if let appURL = workspace.urlForApplication(withBundleIdentifier: bundleID) {
             let configuration = NSWorkspace.OpenConfiguration()
