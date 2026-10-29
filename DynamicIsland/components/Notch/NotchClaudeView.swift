@@ -142,7 +142,11 @@ struct NotchClaudeView: View {
                             .transition(.scale(scale: 0.9).combined(with: .opacity))
                     }
                     ForEach(sessions) { session in
-                        ClaudeSessionCard(session: session) { monitor.open(session) } onReveal: {
+                        ClaudeSessionCard(session: session) {
+                            monitor.open(session)
+                        } onOpenInApp: {
+                            monitor.openInClaudeApp(session)
+                        } onReveal: {
                             monitor.revealFolder(of: session)
                         }
                         .frame(width: 236, height: geo.size.height)
@@ -240,6 +244,7 @@ struct NotchClaudeView: View {
 private struct ClaudeSessionCard: View {
     let session: ClaudeCodeSession
     let onOpen: () -> Void
+    let onOpenInApp: () -> Void
     let onReveal: () -> Void
 
     @State private var isHovered = false
@@ -290,21 +295,15 @@ private struct ClaudeSessionCard: View {
                 shape.strokeBorder(borderColor, lineWidth: 1)
             }
         }
-        .overlay(alignment: .bottomTrailing) {
-            if isHovered {
-                Image(systemName: "arrow.up.forward.circle.fill")
-                    .font(.system(size: 16))
-                    .foregroundStyle(.white, ClaudeCodePalette.brand)
-                    .padding(9)
-                    .transition(.scale.combined(with: .opacity))
-            }
-        }
         .contentShape(shape)
         .onHover { isHovered = $0 }
         .onTapGesture(perform: onOpen)
         .animation(.easeOut(duration: 0.15), value: isHovered)
         .contextMenu {
-            Button(session.isDesktop ? "Open in Claude" : "Resume in Terminal", action: onOpen)
+            Button(session.isDesktop ? String(localized: "Open in Claude") : String(localized: "Resume in Terminal"), action: onOpen)
+            if !session.isDesktop {
+                Button("Open in Claude App", action: onOpenInApp)
+            }
             if session.cwd != nil {
                 Button("Show Folder in Finder", action: onReveal)
             }
@@ -334,14 +333,34 @@ private struct ClaudeSessionCard: View {
                     .truncationMode(.middle)
             }
             Spacer(minLength: 4)
-            Text(session.isDesktop ? "App" : "CLI")
-                .font(.system(size: 9, weight: .bold, design: .rounded))
-                .padding(.horizontal, 5)
-                .padding(.vertical, 1.5)
-                .background(Capsule().fill(Color.white.opacity(0.1)))
+            originBadge
         }
         .font(.system(size: 10, weight: .medium))
         .foregroundStyle(.white.opacity(0.5))
+    }
+
+    /// Where the session lives, as a fixed-size icon so no translation can push
+    /// it out of the footer; on hover it turns into the "open" arrow in place.
+    private var originBadge: some View {
+        ZStack {
+            if isHovered {
+                Image(systemName: "arrow.up.forward")
+                    .font(.system(size: 9.5, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 22, height: 18)
+                    .background(Capsule().fill(ClaudeCodePalette.brand))
+                    .transition(.scale.combined(with: .opacity))
+            } else {
+                Image(systemName: session.isDesktop ? "macwindow" : "terminal")
+                    .font(.system(size: 9.5, weight: .semibold))
+                    .frame(width: 22, height: 18)
+                    .background(Capsule().fill(Color.white.opacity(0.1)))
+                    .transition(.opacity)
+            }
+        }
+        .fixedSize()
+        .layoutPriority(1)
+        .help(session.isDesktop ? String(localized: "Claude app session") : String(localized: "Terminal session"))
     }
 
     private var borderColor: Color {

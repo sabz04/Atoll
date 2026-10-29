@@ -304,11 +304,20 @@ final class ClaudeCodeSessionMonitor: ObservableObject {
 
     // MARK: - Opening sessions
 
-    /// Desktop sessions open the Claude app; CLI sessions resume in Terminal.
+    /// Desktop sessions open their own chat in the Claude app; CLI sessions
+    /// resume in Terminal.
     func open(_ session: ClaudeCodeSession) {
         if session.isDesktop || session.cwd == nil {
-            if let app = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.anthropic.claudefordesktop") {
-                NSWorkspace.shared.openApplication(at: app, configuration: .init())
+            let cliSessionID = session.id
+            Task {
+                let desktopID = await Task.detached(priority: .userInitiated) {
+                    Self.desktopSessionID(forCLISession: cliSessionID)
+                }.value
+                if let desktopID, let url = URL(string: "claude://code/continue?session=\(desktopID)&source=atoll") {
+                    NSWorkspace.shared.open(url)
+                } else {
+                    Self.activateClaudeApp()
+                }
             }
             return
         }
@@ -324,6 +333,47 @@ final class ClaudeCodeSessionMonitor: ObservableObject {
         } catch {
             Logger.log("ClaudeCode: could not open session \(session.id): \(error)", category: .warning)
         }
+    }
+
+    /// Brings a CLI session into the Claude app, which imports it and opens it.
+    func openInClaudeApp(_ session: ClaudeCodeSession) {
+        guard let url = URL(string: "claude://resume?session=\(session.id)") else { return }
+        NSWorkspace.shared.open(url)
+    }
+
+    private static func activateClaudeApp() {
+        guard let app = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.anthropic.claudefordesktop") else { return }
+        NSWorkspace.shared.openApplication(at: app, configuration: .init())
+    }
+
+    /// The Claude app keeps one record per Code session,
+    /// `claude-code-sessions/<org>/<account>/local_<id>.json`, which opens with its
+    /// own id and the Claude Code session id; the first bytes are enough to match.
+    private nonisolated static func desktopSessionID(forCLISession cliSessionID: String) -> String? {
+        let root = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/Application Support/Claude/claude-code-sessions", isDirectory: true)
+        guard let enumerator = FileManager.default.enumerator(
+            at: root, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles]
+        ) else { return nil }
+
+        let needle = "\"cliSessionId\":\"\(cliSessionID)\""
+        for case let url as URL in enumerator {
+            let name = url.lastPathComponent
+            if name.hasPrefix("deleted_") {
+                enumerator.skipDescendants()
+                continue
+            }
+            guard name.hasPrefix("local_"), url.pathExtension == "json",
+                  let handle = try? FileHandle(forReadingFrom: url) else { continue }
+            let head = (try? handle.read(upToCount: 512)) ?? Data()
+            try? handle.close()
+            guard String(decoding: head, as: UTF8.self).contains(needle) else { continue }
+            let id = url.deletingPathExtension().lastPathComponent
+            // The app only accepts `local_` ids of this shape in the link.
+            guard id.range(of: "^local_[A-Za-z0-9-]{1,64}$", options: .regularExpression) != nil else { return nil }
+            return id
+        }
+        return nil
     }
 
     func revealFolder(of session: ClaudeCodeSession) {

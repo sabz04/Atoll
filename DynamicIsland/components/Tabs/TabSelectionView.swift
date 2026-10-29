@@ -62,6 +62,12 @@ struct TabSelectionView: View {
     @State private var dragLocation: CGPoint = .zero
     @State private var grabOffset: CGSize?
     @State private var isOverRemoveZone = false
+    /// Between letting go and the held tab landing in its slot (or vanishing).
+    @State private var isSettling = false
+    /// True only while the hold gesture is live. Unlike `onEnded` it also resets
+    /// when the system cancels the gesture (the notch closing mid-drag), which
+    /// would otherwise leave a tab stuck in the air.
+    @GestureState private var isHoldingTab = false
 
     private static let coordinateSpaceName = "NotchTabBar"
     /// How far below the bar a held tab has to travel before letting go removes it.
@@ -87,13 +93,25 @@ struct TabSelectionView: View {
         .coordinateSpace(name: Self.coordinateSpaceName)
         .onPreferenceChange(TabFramePreferenceKey.self) { tabFrames = $0 }
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: tabs.map(\.id))
-        .clipShape(TabBarClipShape(isDragging: draggingKey != nil))
+        .clipShape(Capsule())
+        // The held tab floats above the bar, unclipped, exactly under the cursor;
+        // its slot in the bar stays as an invisible placeholder the others make room for.
+        .overlay(alignment: .topLeading) { floatingTab(in: tabs) }
         .onAppear {
             ensureValidSelection(with: tabs)
         }
         .onChange(of: tabs.map(\.id)) { _, _ in
             ensureValidSelection(with: self.tabs)
         }
+        .onChange(of: isHoldingTab) { _, holding in
+            guard !holding else { return }
+            // A normal release has already started settling by now; only a
+            // cancelled gesture gets here with the tab still held.
+            DispatchQueue.main.async {
+                if draggingKey != nil && !isSettling { cancelDrag() }
+            }
+        }
+        .onDisappear { cancelDrag() }
     }
 
     // MARK: - Tab item
@@ -102,12 +120,11 @@ struct TabSelectionView: View {
     private func tabItem(_ tab: TabModel) -> some View {
         let isSelected = isSelected(tab)
         let isDragging = draggingKey == tab.id
-        let isRemoving = isDragging && isOverRemoveZone
         let activeAccent = tab.accentColor ?? .white
 
         Image(systemName: tab.icon)
             .frame(height: 26)
-            .foregroundStyle(isRemoving ? Color.red : (isSelected ? activeAccent : .gray))
+            .foregroundStyle(isSelected ? activeAccent : .gray)
             .background {
                 if isSelected {
                     Capsule()
@@ -130,22 +147,7 @@ struct TabSelectionView: View {
                     )
                 }
             }
-            .overlay(alignment: .topTrailing) {
-                if isRemoving {
-                    Image(systemName: "minus.circle.fill")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(.white, .red)
-                        .offset(x: 7, y: -5)
-                        .transition(.scale.combined(with: .opacity))
-                }
-            }
-            .scaleEffect(isDragging ? (isRemoving ? 0.9 : 1.22) : 1)
-            .shadow(color: .black.opacity(isDragging ? 0.5 : 0), radius: 6, y: 3)
-            .opacity(isRemoving ? 0.7 : 1)
-            .offset(isDragging ? heldOffset(for: tab.id) : .zero)
-            .zIndex(isDragging ? 1 : 0)
-            .animation(.spring(response: 0.25, dampingFraction: 0.75), value: isDragging)
-            .animation(.easeOut(duration: 0.15), value: isRemoving)
+            .opacity(isDragging ? 0 : 1)
             .onTapGesture { select(tab) }
             .gesture(reorderGesture(for: tab))
             .contextMenu { contextMenu(for: tab) }
@@ -168,9 +170,51 @@ struct TabSelectionView: View {
 
     // MARK: - Drag to reorder / remove
 
+    @ViewBuilder
+    private func floatingTab(in tabs: [TabModel]) -> some View {
+        if let key = draggingKey, let tab = tabs.first(where: { $0.id == key }), let slot = tabFrames[key] {
+            let removing = isOverRemoveZone
+            let vanishing = removing && isSettling
+            Image(systemName: tab.icon)
+                .foregroundStyle(removing ? Color.red : (isSelected(tab) ? (tab.accentColor ?? .white) : .white))
+                .frame(width: slot.width + 16, height: 28)
+                .background(Capsule().fill(removing ? Color.red.opacity(0.2) : Color.white.opacity(0.18)))
+                .overlay(alignment: .topTrailing) {
+                    if removing {
+                        Image(systemName: "minus.circle.fill")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(.white, .red)
+                            .offset(x: 4, y: -4)
+                            .transition(.scale.combined(with: .opacity))
+                    }
+                }
+                .scaleEffect(vanishing ? 0.3 : (removing ? 0.92 : 1.12))
+                .opacity(vanishing ? 0 : 1)
+                .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
+                .animation(.spring(response: 0.25, dampingFraction: 0.75), value: removing)
+                .position(heldCenter(slot: slot))
+                .allowsHitTesting(false)
+                .transition(.opacity)
+        }
+    }
+
+    /// Follows the cursor sideways within the bar, and only ever downwards —
+    /// above the bar is the top edge of the notch.
+    private func heldCenter(slot: CGRect) -> CGPoint {
+        guard let grabOffset else { return CGPoint(x: slot.midX, y: slot.midY) }
+        let minX = tabFrames.values.map(\.minX).min() ?? slot.minX
+        let maxX = tabFrames.values.map(\.maxX).max() ?? slot.maxX
+        let x = min(max(dragLocation.x - grabOffset.width, minX), maxX)
+        let y = slot.midY + max(0, dragLocation.y - grabOffset.height - slot.midY)
+        return CGPoint(x: x, y: y)
+    }
+
     private func reorderGesture(for tab: TabModel) -> some Gesture {
         LongPressGesture(minimumDuration: 0.3)
             .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .named(Self.coordinateSpaceName)))
+            .updating($isHoldingTab) { value, holding, _ in
+                if case .second(true, _) = value { holding = true }
+            }
             .onChanged { value in
                 guard case .second(true, let drag) = value else { return }
                 if draggingKey == nil { beginDrag(tab) }
@@ -183,15 +227,16 @@ struct TabSelectionView: View {
     }
 
     private func beginDrag(_ tab: TabModel) {
+        guard !isSettling else { return }
         liveOrder = tabs.map(\.id)
         grabOffset = nil
         isOverRemoveZone = false
-        withAnimation(.spring(response: 0.25, dampingFraction: 0.75)) { draggingKey = tab.id }
+        draggingKey = tab.id
         haptic(.levelChange)
     }
 
     private func updateDrag(_ tab: TabModel, _ drag: DragGesture.Value) {
-        guard let frame = tabFrames[tab.id] else { return }
+        guard !isSettling, let frame = tabFrames[tab.id] else { return }
         if grabOffset == nil {
             grabOffset = CGSize(width: drag.startLocation.x - frame.midX, height: drag.startLocation.y - frame.midY)
         }
@@ -215,28 +260,42 @@ struct TabSelectionView: View {
         haptic(.alignment)
     }
 
+    /// Lands the held tab: it flies into its slot (or shrinks away when being
+    /// removed), and only then hands back to the real tab in the bar.
     private func endDrag(_ tab: TabModel) {
-        if isOverRemoveZone && tab.isRemovable {
-            remove(tab.id)
-            haptic(.generic)
-        } else if let liveOrder, liveOrder != NotchTabCatalog.visibleTabs(extensionPayloads: extensionTabsEnabled ? extensionTabPayloads : []).map(\.id) {
+        guard draggingKey != nil, !isSettling else { return }
+        let removing = isOverRemoveZone && tab.isRemovable
+        if !removing, let liveOrder,
+           liveOrder != NotchTabCatalog.visibleTabs(extensionPayloads: extensionTabsEnabled ? extensionTabPayloads : []).map(\.id) {
             NotchTabCatalog.saveOrder(liveOrder)
         }
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+        withAnimation(.spring(response: 0.25, dampingFraction: 0.85)) {
+            isSettling = true
+            if !removing, let slot = tabFrames[tab.id], let grabOffset {
+                dragLocation = CGPoint(x: slot.midX + grabOffset.width, y: slot.midY + grabOffset.height)
+            }
+        }
+        haptic(removing ? .generic : .alignment)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
+            if removing { remove(tab.id) }
+            draggingKey = nil
+            liveOrder = nil
+            isOverRemoveZone = false
+            grabOffset = nil
+            isSettling = false
+        }
+    }
+
+    /// Drops a drag without applying it: the bar goes back to the saved order.
+    private func cancelDrag() {
+        guard draggingKey != nil else { return }
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
             draggingKey = nil
             liveOrder = nil
             isOverRemoveZone = false
         }
         grabOffset = nil
-    }
-
-    /// Where the held tab is drawn relative to its slot in the (live) order.
-    private func heldOffset(for key: String) -> CGSize {
-        guard let frame = tabFrames[key], let grabOffset else { return .zero }
-        return CGSize(
-            width: dragLocation.x - grabOffset.width - frame.midX,
-            height: max(-6, dragLocation.y - grabOffset.height - frame.midY)
-        )
+        isSettling = false
     }
 
     private func remove(_ key: String) {
@@ -295,19 +354,6 @@ private struct TabFramePreferenceKey: PreferenceKey {
     static var defaultValue: [String: CGRect] = [:]
     static func reduce(value: inout [String: CGRect], nextValue: () -> [String: CGRect]) {
         value.merge(nextValue()) { $1 }
-    }
-}
-
-/// The bar is clipped to its capsule, except while a tab is held: the lifted
-/// tab grows and travels below the bar on its way to being removed. One shape
-/// type either way — swapping the modifier would rebuild the bar mid-drag and
-/// cancel the gesture.
-private struct TabBarClipShape: Shape {
-    let isDragging: Bool
-
-    func path(in rect: CGRect) -> Path {
-        guard isDragging else { return Capsule().path(in: rect) }
-        return Path(rect.insetBy(dx: -24, dy: -24).offsetBy(dx: 0, dy: 40))
     }
 }
 

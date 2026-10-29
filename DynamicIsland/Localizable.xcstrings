@@ -85153,6 +85153,36 @@
           }
         }
       }
+    },
+    "Open in Claude App" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть в приложении Claude"
+          }
+        }
+      }
+    },
+    "Claude app session" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сессия в приложении Claude"
+          }
+        }
+      }
+    },
+    "Terminal session" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сессия в терминале"
+          }
+        }
+      }
     }
   },
   "version" : "1.2"
