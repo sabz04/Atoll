@@ -41,6 +41,8 @@
 > - The clipboard lives inside the notch as a tab in the top bar, with filters (Text, Links, Photos, Files, Favorites), search, and cards that show real image thumbnails, link hosts and file previews.
 > - Closing the notch keeps your place: it reopens on the last tab, with the clipboard filter, search and scroll position intact.
 > - Leaner clipboard capture: types are detected without reading the whole payload, duplicate images are matched by hash, thumbnails are decoded off the main thread.
+> - Rearrange the tab bar: press and hold a tab to drag it, drag it down to remove it; Settings → Tabs brings tabs back (Home always stays).
+> - A Claude Code tab lists your sessions from the terminal and the Claude app with live status (working, needs permission, done) via Claude Code hooks, notifies under the closed notch, and resumes a session in one click. Everything stays local.
 > - Sparkle auto-updates are off, so upstream releases never replace the custom build.
 >
 > There are no prebuilt releases: build it with `scripts/build-custom.sh` (notes in [CLAUDE.md](CLAUDE.md)).

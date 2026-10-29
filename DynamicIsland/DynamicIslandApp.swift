@@ -571,7 +571,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         } else if coordinator.currentView == .notes {
             let preferredHeight = coordinator.notesLayoutState.preferredHeight
             baseSize.height = max(baseSize.height, preferredHeight)
-        } else if coordinator.currentView == .clipboard {
+        } else if coordinator.currentView == .clipboard || coordinator.currentView == .claude {
             // Clipboard has its own fixed height source; don't inherit the notes layout state.
             baseSize.height = max(baseSize.height, NotesLayoutState.list.preferredHeight)
         } else if coordinator.currentView == .terminal {
@@ -726,6 +726,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // file cleanup against the real ~/Documents/ClipboardData first.
         if Defaults[.enableClipboardManager] && !AppRuntimeEnvironment.isHostingUnitTests {
             ClipboardManager.shared.startMonitoring()
+        }
+
+        // Claude Code sessions are watched from launch so a session finishing
+        // while the notch is closed can still announce itself.
+        if !AppRuntimeEnvironment.isHostingUnitTests {
+            Defaults.publisher(.enableClaudeCodeIntegration)
+                .receive(on: DispatchQueue.main)
+                .sink { change in
+                    Task { @MainActor in
+                        if change.newValue {
+                            ClaudeCodeSessionMonitor.shared.start()
+                        } else {
+                            ClaudeCodeSessionMonitor.shared.stop()
+                        }
+                    }
+                }
+                .store(in: &cancellables)
         }
 
         Defaults.publisher(.enableThirdPartyDDCIntegration, options: [])

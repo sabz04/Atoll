@@ -36,6 +36,7 @@ enum SneakContentType: Equatable {
     case privacy
     case lockScreen
     case capsLock
+    case claudeCode
     case extensionLiveActivity(bundleID: String, activityID: String)
 }
 
@@ -56,7 +57,8 @@ extension SneakContentType {
              (.bluetoothAudio, .bluetoothAudio),
              (.privacy, .privacy),
              (.lockScreen, .lockScreen),
-             (.capsLock, .capsLock):
+             (.capsLock, .capsLock),
+             (.claudeCode, .claudeCode):
             return true
         case let (.extensionLiveActivity(lb, la), .extensionLiveActivity(rb, ra)):
             return lb == rb && la == ra
@@ -99,20 +101,23 @@ class DynamicIslandViewCoordinator: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private var hoverOpenSuppressedUntil: Date = .distantPast
     
-    private static let tabOrder: [NotchViews] = [.home, .shelf, .timer, .stats, .llmUsage, .colorPicker, .notes, .clipboard, .terminal, .extensionExperience]
-    
+    private static let tabOrder: [NotchViews] = [.home, .shelf, .timer, .stats, .llmUsage, .colorPicker, .notes, .clipboard, .claude, .terminal, .extensionExperience]
+
     /// Direction of the most recent tab switch (true = forward/right, false = backward/left)
     @Published var tabSwitchForward: Bool = true
-    
+
     @Published var currentView: NotchViews = .home {
         didSet {
             if Defaults[.enableMinimalisticUI] && currentView != .home {
                 currentView = .home
                 return
             }
-            // Track direction before SwiftUI re-renders
-            let oldIdx = Self.tabOrder.firstIndex(of: oldValue) ?? 0
-            let newIdx = Self.tabOrder.firstIndex(of: currentView) ?? 0
+            // Track direction before SwiftUI re-renders, following the bar as the
+            // user arranged it; views that aren't tabs fall back to the default order.
+            let barOrder = NotchTabCatalog.visibleTabs().map(\.view)
+            let order = barOrder.contains(oldValue) && barOrder.contains(currentView) ? barOrder : Self.tabOrder
+            let oldIdx = order.firstIndex(of: oldValue) ?? 0
+            let newIdx = order.firstIndex(of: currentView) ?? 0
             tabSwitchForward = newIdx >= oldIdx
             handleStatsTabTransition(from: oldValue, to: currentView)
         }
@@ -344,7 +349,7 @@ class DynamicIslandViewCoordinator: ObservableObject {
             resolvedDuration = duration
         }
         sneakPeekDuration = resolvedDuration
-        let bypassedTypes: [SneakContentType] = [.music, .timer, .reminder, .bluetoothAudio]
+        let bypassedTypes: [SneakContentType] = [.music, .timer, .reminder, .bluetoothAudio, .claudeCode]
         
         // Check if it's an extension type
         let isExtensionType: Bool

@@ -1366,6 +1366,18 @@ extension Defaults.Keys {
     static let showClipboardIcon = Key<Bool>("showClipboardIcon", default: true)
     static let clipboardDisplayMode = Key<ClipboardDisplayMode>("clipboardDisplayMode", default: .notchTab)
     static let didMigrateClipboardToNotchTab = Key<Bool>("didMigrateClipboardToNotchTab", default: false)
+
+    // MARK: Notch Tabs
+    /// Tab keys (`NotchTabKind` raw values, `extension-<id>`) in the order the user dragged them into; empty = default order.
+    static let notchTabOrder = Key<[String]>("notchTabOrder", default: [])
+    /// Tabs the user removed from the bar. Home is never removed.
+    static let hiddenNotchTabs = Key<[String]>("hiddenNotchTabs", default: [])
+
+    // MARK: Claude Code
+    /// Claude tab plus the session monitor behind it. Reads transcripts in ~/.claude/projects only.
+    static let enableClaudeCodeIntegration = Key<Bool>("enableClaudeCodeIntegration", default: true)
+    /// Sneak peek under the closed notch when a session finishes or needs permission (needs the hooks).
+    static let claudeCodeNotifications = Key<Bool>("claudeCodeNotifications", default: true)
     
     // MARK: Screen Assistant Feature
     static let enableScreenAssistant = Key<Bool>("enableScreenAssistant", default: true)

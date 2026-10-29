@@ -96,47 +96,10 @@ func maxAllowedNotchWidth() -> CGFloat {
 
 // MARK: - Tab-Based Notch Width
 
-/// Counts the number of currently enabled standard notch tabs.
-/// Mirrors the tab-building logic in ``TabSelectionView``.
+/// Counts the built-in tabs the bar currently shows: enabled features minus
+/// the tabs the user removed. Same source as ``TabSelectionView``.
 func enabledStandardTabCount() -> Int {
-    var count = 0
-
-    // Home tab
-    if Defaults[.showStandardMediaControls] || Defaults[.showCalendar] || Defaults[.showMirror] {
-        count += 1
-    }
-
-    // Shelf tab
-    if Defaults[.dynamicShelf] {
-        count += 1
-    }
-
-    // Timer tab (only in .tab display mode)
-    if Defaults[.enableTimerFeature] && Defaults[.timerDisplayMode] == .tab {
-        count += 1
-    }
-
-    // Stats tab
-    if Defaults[.enableStatsFeature] {
-        count += 1
-    }
-
-    // Notes / Clipboard tab
-    if Defaults[.enableNotes] || (Defaults[.enableClipboardManager] && Defaults[.clipboardDisplayMode] == .separateTab) {
-        count += 1
-    }
-
-    // Clipboard tab (only in .notchTab display mode)
-    if Defaults[.enableClipboardManager] && Defaults[.clipboardDisplayMode] == .notchTab {
-        count += 1
-    }
-
-    // Terminal tab
-    if Defaults[.enableTerminalFeature] {
-        count += 1
-    }
-
-    return count
+    NotchTabCatalog.visibleTabs().count
 }
 
 /// Returns the recommended minimum notch width for the given tab count.

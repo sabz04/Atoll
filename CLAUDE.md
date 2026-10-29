@@ -37,9 +37,13 @@ scripts/build-custom.sh --install  # + бэкап установленного �
 
 - `DynamicIsland/DynamicIslandApp.swift` — AppDelegate: запуск, горячие клавиши, миграции настроек, Sparkle.
 - `DynamicIsland/ContentView.swift` — раскладка выреза, высота открытого выреза по вкладке, `switch coordinator.currentView`.
-- `DynamicIsland/DynamicIslandViewCoordinator.swift` — текущая вкладка (`currentView`) и порядок вкладок `tabOrder`.
-- `DynamicIsland/components/Tabs/TabSelectionView.swift` — верхний бар вкладок. Логику дублирует
-  `enabledStandardTabCount()` в `sizing/matters.swift` (минимальная ширина выреза) — менять оба места вместе.
+- `DynamicIsland/DynamicIslandViewCoordinator.swift` — текущая вкладка (`currentView`), направление анимации
+  переключения (по порядку бара), sneak peek под закрытым вырезом (`toggleSneakPeek`, `SneakContentType`).
+- `DynamicIsland/components/Tabs/NotchTabCatalog.swift` — единый источник вкладок: `NotchTabKind` (стабильные ключи),
+  какие включены по функциям, порядок и убранные (`notchTabOrder`, `hiddenNotchTabs`). Его используют бар,
+  `enabledStandardTabCount()` (минимальная ширина выреза) и настройки — новую вкладку добавлять только сюда.
+- `DynamicIsland/components/Tabs/TabSelectionView.swift` — бар: тап выбирает, удержание 0.3 с поднимает вкладку,
+  ведение вбок переставляет, вниз на 26 pt — убирает (Главная не убирается), контекстное меню.
 - `DynamicIsland/models/Constants.swift` — все ключи `Defaults` и одноразовые миграции (`migrate…`).
 - `DynamicIsland/enums/generic.swift` — `NotchViews` (список вкладок выреза).
 - Проект использует синхронизируемые папки Xcode: новые файлы в `DynamicIsland/` попадают в таргет сами.
@@ -54,6 +58,21 @@ scripts/build-custom.sh --install  # + бэкап установленного �
   главного потока, кэш `NSCache` по id элемента.
 - `components/Clipboard/ClipboardDragging.swift` — перетаскивание карточек в другие приложения.
 - `ClipboardPanel` / `ClipboardPopover` / `ClipboardWindow` — старые оконные режимы, остаются выбираемыми в настройках.
+
+### Claude Code
+
+- `managers/ClaudeCode/ClaudeCodeSession.swift` — модель сессии и чтение хвоста транскрипта
+  `~/.claude/projects/<проект>/<uuid>.jsonl` (записи `custom-title`, `last-prompt`, `cost-state`, поле `cwd`;
+  `entrypoint == "claude-desktop"` — сессия приложения). Формат внутренний, может меняться между версиями.
+- `managers/ClaudeCode/ClaudeCodeSessionMonitor.swift` — FSEvents на папку проектов и папку событий, обновление
+  не чаще раза в секунду, кэш снимков по дате/размеру файла; статус из хуков, без хуков — по свежести файла;
+  sneak peek при «ждёт разрешения» и «готово». Открытие: приложение Claude или `.command`-файл с `claude --resume`.
+- `managers/ClaudeCode/ClaudeCodeHooks.swift` — подключение хуков в `~/.claude/settings.json` (слияние с
+  чужими хуками, бэкап `settings.json.atoll-backup`, отказ при битом JSON) и скрипт `atoll-hook.sh`, который
+  пишет в `~/Library/Application Support/Atoll/ClaudeCode/events` только имя события, id сессии и текст
+  уведомления. Хуки Claude Code читает при старте сессии — открытые сессии подхватят их после перезапуска.
+- `components/Notch/NotchClaudeView.swift` — вкладка; `components/Settings/ClaudeCodeSettings.swift`,
+  `NotchTabsSettings.swift` — разделы настроек.
 
 ## Отличия форка от upstream
 
@@ -70,7 +89,12 @@ scripts/build-custom.sh --install  # + бэкап установленного �
    `pasteboard.types`, без чтения данных; дубли картинок — по хэшу.
 7. Sparkle выключен (`AtollCustomBuild` в Info.plist → `AppRuntimeEnvironment.isCustomBuild`): иначе
    автообновление заменит сборку официальной.
-8. Исправлены русские переводы: «All» был «Выравнивание», плейсхолдер поиска был «Строк обратной прокрутки».
+8. Исправлены русские переводы: «All» был «Выравнивание», «Done» — «Поддержать», плейсхолдер поиска был
+   «Строк обратной прокрутки».
+9. Вкладки бара переставляются удержанием и перетаскиванием, убираются утягиванием вниз; управление и возврат —
+   Настройки → Вкладки.
+10. Вкладка Claude Code: сессии за 7 дней из терминала и приложения, живой статус через хуки (подключаются кнопкой
+    во вкладке или в настройках), уведомления под закрытым вырезом, открытие/продолжение сессии по клику.
 
 ## Правила
 
@@ -82,3 +106,6 @@ scripts/build-custom.sh --install  # + бэкап установленного �
 - В `body` не декодировать картинки и не читать файлы — только через `ClipboardThumbnailLoader` или `.task`.
 - Пользовательский текст выводить через `Text(String)` (verbatim), не через строковые литералы с интерполяцией.
 - Не включать Sparkle и не добавлять сетевые запросы без явной просьбы.
+- Хук-скрипт Claude Code обязан всегда завершаться с кодом 0, не блокировать сессию и не сохранять запросы,
+  ввод/вывод инструментов. Установщик хуков проверять на копии с подменённым домашним каталогом
+  (`homeDirectoryForCurrentUser` не смотрит на `$HOME`), а не на реальном `~/.claude/settings.json`.

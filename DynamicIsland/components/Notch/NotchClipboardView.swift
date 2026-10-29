@@ -110,8 +110,10 @@ final class ClipboardTabState: ObservableObject {
 
     @Published private(set) var filter: ClipboardFilter = .all
     @Published private(set) var query = ""
-    /// Leading card of the strip; the scroll view writes it as you scroll.
-    @Published var scrolledItemID: UUID?
+    /// Leading card of the strip; the scroll view writes it as you scroll. Not
+    /// published: the tab only reads it when its scroll view is built, and
+    /// publishing would redraw the whole tab every time a card scrolls past.
+    var scrolledItemID: UUID?
     /// Whether the tab is on screen, so a copy made meanwhile can reset the strip.
     var isVisible = false
 
@@ -274,7 +276,7 @@ struct NotchClipboardView: View {
                 .scrollTargetLayout()
             }
             // Restores the remembered card when the notch reopens.
-            .scrollPosition(id: $state.scrolledItemID, anchor: .leading)
+            .scrollPosition(id: Binding(get: { state.scrolledItemID }, set: { state.scrolledItemID = $0 }), anchor: .leading)
             // A new filter or search starts from the newest item instead of a stale offset.
             .id("\(state.filter)|\(state.query)")
         }

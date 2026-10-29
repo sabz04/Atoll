@@ -20517,7 +20517,6 @@
       }
     },
     "Connected" : {
-      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -20559,6 +20558,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已連線"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подключено"
           }
         }
       }
@@ -26127,6 +26132,12 @@
             "state" : "translated",
             "value" : "연결 해제"
           }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отключить"
+          }
         }
       }
     },
@@ -26994,7 +27005,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Поддержать"
+            "value" : "Готово"
           }
         },
         "th" : {
@@ -84667,6 +84678,478 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "50 шт."
+          }
+        }
+      }
+    },
+    "Home" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Главная"
+          }
+        }
+      }
+    },
+    "Tabs" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вкладки"
+          }
+        }
+      }
+    },
+    "Remove Tab" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Убрать вкладку"
+          }
+        }
+      }
+    },
+    "Customize Tabs…" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Настроить вкладки…"
+          }
+        }
+      }
+    },
+    "Notch Tabs" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вкладки выреза"
+          }
+        }
+      }
+    },
+    "In the notch, press and hold a tab to move it, or drag it down out of the bar to remove it. Home always stays." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В вырезе зажмите вкладку, чтобы переставить её, или утяните вниз из бара, чтобы убрать. Главная остаётся всегда."
+          }
+        }
+      }
+    },
+    "Restore Default Tabs" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вернуть вкладки по умолчанию"
+          }
+        }
+      }
+    },
+    "Brings back every removed tab, extension tabs included, in the default order." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Возвращает все убранные вкладки, включая вкладки расширений, в исходном порядке."
+          }
+        }
+      }
+    },
+    "Always shown" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Всегда на месте"
+          }
+        }
+      }
+    },
+    "Its feature is turned off" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Функция выключена"
+          }
+        }
+      }
+    },
+    "Untitled session" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без названия"
+          }
+        }
+      }
+    },
+    "Needs your permission" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ждёт разрешения"
+          }
+        }
+      }
+    },
+    "Live" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live"
+          }
+        }
+      }
+    },
+    "Live status is connected through Claude Code hooks" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Живой статус подключён через хуки Claude Code"
+          }
+        }
+      }
+    },
+    "Nothing running right now" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сейчас ничего не запущено"
+          }
+        }
+      }
+    },
+    "No sessions this week" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "За неделю сессий нет"
+          }
+        }
+      }
+    },
+    "Sessions from the terminal and the Claude app show up here" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Здесь появятся сессии из терминала и приложения Claude"
+          }
+        }
+      }
+    },
+    "Claude Code isn't installed" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code не установлен"
+          }
+        }
+      }
+    },
+    "Install it and your sessions — terminal and app alike — will appear here with live status." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установите его — и сессии из терминала и приложения появятся здесь с живым статусом."
+          }
+        }
+      }
+    },
+    "Get Claude Code" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установить Claude Code"
+          }
+        }
+      }
+    },
+    "Open in Claude" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть в Claude"
+          }
+        }
+      }
+    },
+    "Resume in Terminal" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Продолжить в Терминале"
+          }
+        }
+      }
+    },
+    "Show Folder in Finder" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать папку в Finder"
+          }
+        }
+      }
+    },
+    "Copy Resume Command" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать команду продолжения"
+          }
+        }
+      }
+    },
+    "Copy Session ID" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать ID сессии"
+          }
+        }
+      }
+    },
+    "No folder" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без папки"
+          }
+        }
+      }
+    },
+    "Live status" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Живой статус"
+          }
+        }
+      }
+    },
+    "See when Claude is working, done, or waiting for your permission — right here in the notch." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видно, когда Claude работает, закончил или ждёт твоего разрешения — прямо в вырезе."
+          }
+        }
+      }
+    },
+    "Connect" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подключить"
+          }
+        }
+      }
+    },
+    "Adds Atoll's hooks to ~/.claude/settings.json (a backup is kept)" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавляет хуки Atoll в ~/.claude/settings.json (копия сохраняется)"
+          }
+        }
+      }
+    },
+    "Working" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Работает"
+          }
+        }
+      }
+    },
+    "Needs permission" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ждёт разрешения"
+          }
+        }
+      }
+    },
+    "Waiting for you" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ждёт тебя"
+          }
+        }
+      }
+    },
+    "~/.claude/settings.json isn't valid JSON, so Atoll left it untouched." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "~/.claude/settings.json — не валидный JSON, Atoll его не трогал."
+          }
+        }
+      }
+    },
+    "The hooks section of ~/.claude/settings.json has an unexpected layout, so Atoll left it untouched." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Раздел hooks в ~/.claude/settings.json устроен непривычно, Atoll его не трогал."
+          }
+        }
+      }
+    },
+    "Show Claude Code tab" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вкладка Claude Code"
+          }
+        }
+      }
+    },
+    "Notify under the notch" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уведомлять под вырезом"
+          }
+        }
+      }
+    },
+    "Lists the last 7 days of sessions from ~/.claude/projects, from the terminal and the Claude app alike. Notifications appear when a session finishes or needs your permission, and need live status. Nothing leaves this Mac." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывает сессии за 7 дней из ~/.claude/projects — и из терминала, и из приложения Claude. Уведомления приходят, когда сессия закончила или ждёт разрешения; для них нужен живой статус. Ничего не уходит с этого Mac."
+          }
+        }
+      }
+    },
+    "Live Status" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Живой статус"
+          }
+        }
+      }
+    },
+    "Connecting adds hooks to ~/.claude/settings.json and keeps the original as settings.json.atoll-backup. On each session event the hook writes only the event name and session ID — never your prompts or code — to ~/Library/Application Support/Atoll/ClaudeCode. Sessions already open pick the hooks up once restarted." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подключение добавляет хуки в ~/.claude/settings.json, оригинал сохраняется как settings.json.atoll-backup. На каждое событие хук записывает только название события и ID сессии — не запросы и не код — в ~/Library/Application Support/Atoll/ClaudeCode. Уже открытые сессии подхватят хуки после перезапуска."
+          }
+        }
+      }
+    },
+    "Not connected" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не подключено"
+          }
+        }
+      }
+    },
+    "Install it, then connect live status here." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установите его, затем подключите живой статус здесь."
+          }
+        }
+      }
+    },
+    "Status updates arrive as Claude works." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Статус обновляется по ходу работы Claude."
+          }
+        }
+      }
+    },
+    "Sessions are listed; status is estimated from activity." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сессии видны, статус определяется по активности."
+          }
+        }
+      }
+    },
+    "claude.filter.active" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Активные"
+          }
+        }
+      }
+    },
+    "claude.status.idle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Idle"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не активна"
           }
         }
       }

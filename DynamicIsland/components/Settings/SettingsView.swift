@@ -49,6 +49,7 @@ private enum SettingsTab: String, CaseIterable, Identifiable {
     case general
     case liveActivities
     case appearance
+    case tabs
     case lockScreen
     case media
     case devices
@@ -66,6 +67,7 @@ private enum SettingsTab: String, CaseIterable, Identifiable {
     case shortcuts
     case notes
     case terminal
+    case claudeCode
     case about
 
     var id: String { rawValue }
@@ -73,13 +75,13 @@ private enum SettingsTab: String, CaseIterable, Identifiable {
     /// Which sidebar group this tab belongs to.
     var group: SettingsTabGroup {
         switch self {
-        case .general, .appearance:                                          return .core
+        case .general, .appearance, .tabs:                                   return .core
         case .media, .liveActivities, .lockScreen, .devices:                 return .mediaAndDisplay
         case .hudAndOSD, .battery:                                           return .system
         case .timer, .calendar, .notes:                                      return .productivity
         case .clipboard, .screenAssistant, .colorPicker, .shelf,
              .downloads, .shortcuts:                                         return .utilities
-        case .stats, .terminal:                                              return .developer
+        case .stats, .terminal, .claudeCode:                                 return .developer
         case .extensions:                                                    return .integrations
         case .about:                                                         return .info
         }
@@ -90,6 +92,7 @@ private enum SettingsTab: String, CaseIterable, Identifiable {
         case .general: return String(localized: "General")
         case .liveActivities: return String(localized: "Live Activities")
         case .appearance: return String(localized: "Appearance")
+        case .tabs: return String(localized: "Tabs")
         case .lockScreen: return String(localized: "Lock Screen")
         case .media: return String(localized: "Media")
         case .devices: return String(localized: "Devices")
@@ -107,6 +110,7 @@ private enum SettingsTab: String, CaseIterable, Identifiable {
         case .shortcuts: return String(localized: "Shortcuts")
         case .notes: return String(localized: "Notes")
         case .terminal: return String(localized: "Terminal")
+        case .claudeCode: return "Claude Code"
         case .about: return String(localized: "About")
         }
     }
@@ -116,6 +120,7 @@ private enum SettingsTab: String, CaseIterable, Identifiable {
         case .general: return "gear"
         case .liveActivities: return "waveform.path.ecg"
         case .appearance: return "paintpalette"
+        case .tabs: return "rectangle.3.group"
         case .lockScreen: return "lock.laptopcomputer"
         case .media: return "play.laptopcomputer"
         case .devices: return "headphones"
@@ -133,6 +138,7 @@ private enum SettingsTab: String, CaseIterable, Identifiable {
         case .shortcuts: return "keyboard"
         case .notes: return "note.text"
         case .terminal: return "apple.terminal"
+        case .claudeCode: return "sparkle"
         case .about: return "info.circle"
         }
     }
@@ -142,6 +148,7 @@ private enum SettingsTab: String, CaseIterable, Identifiable {
         case .general: return .blue
         case .liveActivities: return .pink
         case .appearance: return .purple
+        case .tabs: return .indigo
         case .lockScreen: return .orange
         case .media: return .green
         case .devices: return Color(red: 0.1, green: 0.11, blue: 0.12)
@@ -159,6 +166,7 @@ private enum SettingsTab: String, CaseIterable, Identifiable {
         case .shortcuts: return .orange
         case .notes: return Color(red: 0.979, green: 0.716, blue: 0.153, opacity: 1.000)
         case .terminal: return Color(red: 0.2, green: 0.8, blue: 0.4)
+        case .claudeCode: return ClaudeCodePalette.brand
         case .about: return .secondary
         }
     }
@@ -798,6 +806,7 @@ struct SettingsView: View {
             // Core
             .general,
             .appearance,
+            .tabs,
             // Media & Display
             .media,
             .liveActivities,
@@ -820,6 +829,7 @@ struct SettingsView: View {
             // Developer
             .stats,
             .terminal,
+            .claudeCode,
             // Integrations
             .extensions,
             // Info
@@ -1101,6 +1111,14 @@ struct SettingsView: View {
         case .terminal:
             SettingsForm(tab: .terminal) {
                 TerminalSettings()
+            }
+        case .tabs:
+            SettingsForm(tab: .tabs) {
+                NotchTabsSettings()
+            }
+        case .claudeCode:
+            SettingsForm(tab: .claudeCode) {
+                ClaudeCodeSettings()
             }
         case .about:
             if let controller = updaterController {
