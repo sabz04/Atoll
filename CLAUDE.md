@@ -42,6 +42,9 @@ scripts/build-custom.sh --install  # + бэкап установленного �
 - `DynamicIsland/components/Tabs/NotchTabCatalog.swift` — единый источник вкладок: `NotchTabKind` (стабильные ключи),
   какие включены по функциям, порядок и убранные (`notchTabOrder`, `hiddenNotchTabs`). Его используют бар,
   `enabledStandardTabCount()` (минимальная ширина выреза) и настройки — новую вкладку добавлять только сюда.
+- `DynamicIsland/sizing/matters.swift` — `recommendedMinimumNotchWidth`: шапка делит открытый вырез на равные половины
+  вокруг проёма под камеру, бар вкладок — в левой. Минимум ширины учитывает ширину бара (иконка ~20 pt + 24 pt
+  промежутка), иначе лишние вкладки уезжают под камеру.
 - `DynamicIsland/components/Tabs/TabSelectionView.swift` — бар: тап выбирает, удержание 0.3 с поднимает вкладку,
   ведение вбок переставляет, вниз на 48 pt (с сопротивлением) — убирает (Главная не убирается); в контекстном меню — «Вернуть убранные вкладки».
 - `DynamicIsland/models/Constants.swift` — все ключи `Defaults` и одноразовые миграции (`migrate…`).

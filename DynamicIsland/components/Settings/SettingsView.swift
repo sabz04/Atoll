@@ -5428,7 +5428,8 @@ struct Appearance: View {
         Section {
             let recommendedMin = currentRecommendedMinimumNotchWidth()
             let tabCount = enabledStandardTabCount()
-            let dynamicRange = Double(recommendedMin)...900
+            // Nine or more tabs push the minimum past 900; keep the range valid.
+            let dynamicRange = Double(recommendedMin)...max(900, Double(recommendedMin) + 40)
             
             let closedRange = Double(80)...400
             let minimalisticRange = Double(250)...600

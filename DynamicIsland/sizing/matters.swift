@@ -103,10 +103,27 @@ func enabledStandardTabCount() -> Int {
 }
 
 /// Returns the recommended minimum notch width for the given tab count.
+///
+/// The header splits the open notch into equal halves around a spacer the
+/// width of the closed notch, with the tab bar in the left half. Past six
+/// tabs the fixed steps leave the bar wider than its half, and the last tabs
+/// slide under the camera housing — so the width also covers the bar itself,
+/// twice over because the halves stay equal.
 func recommendedMinimumNotchWidth(forTabCount count: Int) -> CGFloat {
-    if count >= 6 { return 770 }
-    if count >= 5 { return 690 }
-    return 640
+    let stepped: CGFloat
+    if count >= 6 { stepped = 770 }
+    else if count >= 5 { stepped = 690 }
+    else { stepped = 640 }
+    return max(stepped, tabBarRequiredNotchWidth(forTabCount: count))
+}
+
+/// Matches `TabSelectionView` (24pt between icons) and the 8pt padding the
+/// header puts around it. Glyphs are measured at their widest, about 20pt.
+private func tabBarRequiredNotchWidth(forTabCount count: Int) -> CGFloat {
+    guard count > 0 else { return 0 }
+    let barWidth = CGFloat(count) * 20 + CGFloat(count - 1) * 24
+    let notchSpacer = min(getClosedNotchSize().width, 300)
+    return ((barWidth + 16) * 2 + notchSpacer).rounded(.up)
 }
 
 /// Returns the recommended minimum notch width for the current tab configuration.
